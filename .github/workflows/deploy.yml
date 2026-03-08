@@ -24,6 +24,7 @@ jobs:
 
       - run: npm run build
         env:
+          # Repo is served at /<repo>/ on GitHub Pages.
           VITE_BASE: /${{ github.event.repository.name }}/
 
       - uses: actions/upload-pages-artifact@v3
