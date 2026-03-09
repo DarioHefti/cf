@@ -17,7 +17,7 @@ export class FakeHitem3DService implements IHitem3DService {
 
     return {
       id: uuid(),
-      modelUrl: `${base}models/demo-cube.gltf`,
+      modelUrl: `${base}models/coffee-table.glb`,
       previewImageUrl: params.version.outputImageUrl,
       status: 'ready',
     };
