@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Not Found</title>
+  </head>
+  <body>
+    <script>
+      // GitHub Pages doesn't support SPA routing by default.
+      // This redirects any unknown path back to the app root.
+      // Reference: https://github.com/rafgraph/spa-github-pages
+      (function () {
+        var l = window.location;
+        var repoBase = l.pathname.split('/').slice(0, 2).join('/');
+        l.replace(l.protocol + '//' + l.host + repoBase + '/');
+      })();
+    </script>
+  </body>
+</html>
