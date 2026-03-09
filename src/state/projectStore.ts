@@ -3,9 +3,13 @@ import { v4 as uuid } from 'uuid';
 import type { ConceptVersion, Message, ProjectState, ThreeDAsset } from '../types';
 import { hitem3DService, nanoBananProService } from '../services';
 
+export type WorkflowStep = 1 | 2 | 3;
+
 interface ProjectStore {
   project: ProjectState;
   isProcessing: boolean;
+  currentStep: WorkflowStep;
+  setStep: (step: WorkflowStep) => void;
   sendUserMessage: (text: string) => Promise<void>;
   selectVersion: (id: string) => void;
   generate3D: () => Promise<void>;
@@ -15,7 +19,9 @@ interface ProjectStore {
     imageUrl: string;
     suggestedMaterialIds: string[];
   }) => void;
+  seedFromUpload: (imageDataUrl: string) => void;
   toggleMaterial: (id: string) => void;
+  reset: () => void;
 }
 
 const initialProject: ProjectState = {
@@ -31,6 +37,22 @@ const initialProject: ProjectState = {
 export const useProjectStore = create<ProjectStore>((set, get) => ({
   project: initialProject,
   isProcessing: false,
+  currentStep: 1,
+
+  setStep: (step: WorkflowStep) => {
+    set({ currentStep: step });
+  },
+
+  reset: () => {
+    set({
+      project: {
+        ...initialProject,
+        id: uuid(),
+      },
+      currentStep: 1,
+      isProcessing: false,
+    });
+  },
 
   seedFromInspiration: ({ title, prompt, imageUrl, suggestedMaterialIds }) => {
     const state = get().project;
@@ -51,14 +73,42 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     set({
       project: {
         ...state,
-        messages: [...state.messages, msg],
-        conceptVersions: [...state.conceptVersions, version],
+        messages: [msg],
+        conceptVersions: [version],
         selectedVersionId: version.id,
-        selectedMaterials: Array.from(
-          new Set([...state.selectedMaterials, ...suggestedMaterialIds]),
-        ),
+        selectedMaterials: suggestedMaterialIds,
         threeDAsset: undefined,
       },
+      currentStep: 2,
+    });
+  },
+
+  seedFromUpload: (imageDataUrl: string) => {
+    const state = get().project;
+    const version: ConceptVersion = {
+      id: uuid(),
+      promptText: 'Uploaded image',
+      outputImageUrl: imageDataUrl,
+      createdAt: Date.now(),
+    };
+
+    const msg: Message = {
+      id: uuid(),
+      role: 'system',
+      text: `✨ I've loaded your uploaded image as the starting design. Describe what changes you'd like to make!`,
+      createdAt: Date.now(),
+    };
+
+    set({
+      project: {
+        ...state,
+        messages: [msg],
+        conceptVersions: [version],
+        selectedVersionId: version.id,
+        selectedMaterials: [],
+        threeDAsset: undefined,
+      },
+      currentStep: 2,
     });
   },
 
@@ -148,7 +198,10 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       status: 'processing',
     };
 
-    set({ project: { ...state, threeDAsset: tempAsset } });
+    set({ 
+      project: { ...state, threeDAsset: tempAsset },
+      currentStep: 3,
+    });
 
     try {
       const asset = await hitem3DService.createModel({
