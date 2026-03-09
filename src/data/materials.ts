@@ -1,41 +1,72 @@
 import type { Material } from '../types';
 
-// Note: For GitHub Pages, assets must include the repo base path at runtime.
-// We build URLs relative to import.meta.env.BASE_URL so they work locally and on Pages.
 const base = import.meta.env.BASE_URL;
 
 export const MATERIALS: Material[] = [
   {
     id: 'oak-natural',
-    name: 'Oak  Natural',
+    name: 'Natural Oak',
     category: 'wood',
-    imageUrl: `${base}materials/oak-natural.svg`,
+    imageUrl: `${base}images/materials/oak-natural.jpg`,
     properties: {
       durability: 'high',
       priceTier: 2,
-      notes: 'Warm tone, good for tabletops.',
+      notes: 'Warm golden tones, excellent for tabletops and shelving.',
     },
   },
   {
     id: 'walnut-dark',
-    name: 'Walnut  Dark',
+    name: 'Dark Walnut',
     category: 'wood',
-    imageUrl: `${base}materials/walnut-dark.svg`,
+    imageUrl: `${base}images/materials/walnut-dark.jpg`,
     properties: {
       durability: 'high',
       priceTier: 3,
-      notes: 'Rich, deep tone; premium look.',
+      notes: 'Rich chocolate brown with beautiful grain patterns.',
     },
   },
   {
     id: 'steel-brushed',
-    name: 'Steel  Brushed',
+    name: 'Brushed Steel',
     category: 'metal',
-    imageUrl: `${base}materials/steel-brushed.svg`,
+    imageUrl: `${base}images/materials/steel-brushed.jpg`,
     properties: {
       durability: 'high',
       priceTier: 2,
-      notes: 'Good for legs / frames.',
+      notes: 'Modern industrial look, ideal for frames and legs.',
+    },
+  },
+  {
+    id: 'marble-white',
+    name: 'White Marble',
+    category: 'stone',
+    imageUrl: `${base}images/materials/marble-white.jpg`,
+    properties: {
+      durability: 'medium',
+      priceTier: 3,
+      notes: 'Luxurious natural stone with unique veining patterns.',
+    },
+  },
+  {
+    id: 'leather-black',
+    name: 'Black Leather',
+    category: 'fabric',
+    imageUrl: `${base}images/materials/leather-black.jpg`,
+    properties: {
+      durability: 'high',
+      priceTier: 3,
+      notes: 'Premium full-grain leather for upholstery and accents.',
+    },
+  },
+  {
+    id: 'brass-polished',
+    name: 'Polished Brass',
+    category: 'metal',
+    imageUrl: `${base}images/materials/brass-polished.jpg`,
+    properties: {
+      durability: 'medium',
+      priceTier: 3,
+      notes: 'Warm metallic finish, perfect for hardware and accents.',
     },
   },
 ];

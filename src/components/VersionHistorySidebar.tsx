@@ -1,19 +1,31 @@
+import { useState } from 'react';
 import { useProjectStore } from '../state/projectStore';
+import { Skeleton } from './Spinner';
 
 export function VersionHistorySidebar() {
-  const { project, selectVersion } = useProjectStore();
+  const { project, selectVersion, isProcessing } = useProjectStore();
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+
+  const handleImageLoad = (id: string) => {
+    setLoadedImages(prev => new Set(prev).add(id));
+  };
 
   return (
     <div className="panel">
-      <h2>Versions</h2>
+      <h2>📚 Version History</h2>
       {project.conceptVersions.length === 0 ? (
-        <div className="hint">No versions yet.</div>
+        <div className="empty-state">
+          <div className="empty-state-icon">📁</div>
+          <div className="empty-state-text">
+            Your design versions will appear here as you iterate.
+          </div>
+        </div>
       ) : (
         <div className="versionGrid">
           {project.conceptVersions
             .slice()
             .reverse()
-            .map((v) => (
+            .map((v, index) => (
               <button
                 key={v.id}
                 className={
@@ -22,9 +34,16 @@ export function VersionHistorySidebar() {
                     : 'versionButton'
                 }
                 onClick={() => selectVersion(v.id)}
-                title={v.promptText}
+                title={`Version ${project.conceptVersions.length - index}: ${v.promptText}`}
+                disabled={isProcessing}
               >
-                <img src={v.outputImageUrl} alt="" />
+                {!loadedImages.has(v.id) && <Skeleton height={70} />}
+                <img 
+                  src={v.outputImageUrl} 
+                  alt={`Version ${project.conceptVersions.length - index}`}
+                  style={{ display: loadedImages.has(v.id) ? 'block' : 'none' }}
+                  onLoad={() => handleImageLoad(v.id)}
+                />
               </button>
             ))}
         </div>

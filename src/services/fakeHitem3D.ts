@@ -11,7 +11,9 @@ export class FakeHitem3DService implements IHitem3DService {
   }): Promise<ThreeDAsset> {
     void params;
 
-    await new Promise((res) => setTimeout(res, 1400));
+    // Simulate realistic 3D model generation time (3-5 seconds)
+    const delay = 3000 + Math.random() * 2000;
+    await new Promise((res) => setTimeout(res, delay));
 
     return {
       id: uuid(),
