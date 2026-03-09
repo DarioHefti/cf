@@ -1,29 +1,27 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useProjectStore } from '../state/projectStore';
+import { ProcessingIndicator } from './Spinner';
 
 export function ChatPanel() {
   const [text, setText] = useState('');
-  const { project, sendUserMessage } = useProjectStore();
+  const { project, sendUserMessage, isProcessing } = useProjectStore();
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const trimmed = text.trim();
-    if (!trimmed) return;
-    await sendUserMessage(trimmed);
+    if (!trimmed || isProcessing) return;
     setText('');
+    await sendUserMessage(trimmed);
   };
-
-  const last = project.messages[project.messages.length - 1];
-  const isBusy = last?.role === 'user';
 
   return (
     <div className="panel">
-      <h2>Chat</h2>
+      <h2>💬 Design Chat</h2>
       <div className="messages">
         {project.messages.length === 0 ? (
           <div className="hint">
-            Pick an inspiration, then describe changes (size, shape, materials, etc.).
+            Pick an inspiration above, then describe changes you'd like — adjust dimensions, materials, style, or any details.
           </div>
         ) : null}
         {project.messages.map((m) => (
@@ -31,15 +29,19 @@ export function ChatPanel() {
             {m.text}
           </div>
         ))}
+        {isProcessing && (
+          <ProcessingIndicator text="AI is designing your changes..." />
+        )}
       </div>
       <form onSubmit={onSubmit} className="chatForm">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Describe changes you want e.g. 'make the legs thinner'"
+          placeholder="e.g., 'Make the legs thinner' or 'Add a drawer'"
+          disabled={isProcessing}
         />
-        <button type="submit" disabled={!text.trim() || isBusy}>
-          Send
+        <button type="submit" disabled={!text.trim() || isProcessing}>
+          {isProcessing ? '...' : 'Send'}
         </button>
       </form>
     </div>

@@ -1,13 +1,47 @@
+import { useState, useEffect } from 'react';
 import { MATERIALS } from '../data/materials';
 import { useProjectStore } from '../state/projectStore';
+import { Skeleton } from './Spinner';
 
 export function MaterialsLibrary() {
-  const { project, toggleMaterial } = useProjectStore();
+  const { project, toggleMaterial, isProcessing } = useProjectStore();
   const selected = new Set(project.selectedMaterials);
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  // Simulate initial data loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitialLoading(false);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleImageLoad = (id: string) => {
+    setLoadedImages(prev => new Set(prev).add(id));
+  };
+
+  if (isInitialLoading) {
+    return (
+      <div className="panel">
+        <h2>🪵 Materials</h2>
+        <div className="materialsGrid">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="material" style={{ cursor: 'default' }}>
+              <Skeleton height={70} />
+              <div style={{ marginTop: 8 }}>
+                <Skeleton width="70%" height={14} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="panel">
-      <h2>Materials</h2>
+      <h2>🪵 Materials</h2>
       <div className="materialsGrid">
         {MATERIALS.map((m) => (
           <button
@@ -15,8 +49,15 @@ export function MaterialsLibrary() {
             className={selected.has(m.id) ? 'material selected' : 'material'}
             onClick={() => toggleMaterial(m.id)}
             title={m.properties.notes}
+            disabled={isProcessing}
           >
-            <img src={m.imageUrl} alt={m.name} />
+            {!loadedImages.has(m.id) && <Skeleton height={70} />}
+            <img 
+              src={m.imageUrl} 
+              alt={m.name}
+              style={{ display: loadedImages.has(m.id) ? 'block' : 'none' }}
+              onLoad={() => handleImageLoad(m.id)}
+            />
             <div className="materialName">{m.name}</div>
           </button>
         ))}

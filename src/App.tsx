@@ -10,9 +10,9 @@ export default function App() {
   return (
     <div className="appShell">
       <header className="header">
-        <div className="brand">Custom Furniture from Sketch (Prototype)</div>
+        <div className="brand">🪑 Custom Furniture Studio</div>
         <div className="sub">
-          Static SPA with fake services (NanoBananPro + Hitem3D)
+          Design your perfect piece • AI-powered customization • AR preview
         </div>
       </header>
 
@@ -34,7 +34,7 @@ export default function App() {
       </main>
 
       <footer className="footer">
-        Tip: this app uses HashRouter for GitHub Pages compatibility.
+        Built with ❤️ • Powered by NanoBananPro AI + Hitem3D
       </footer>
     </div>
   );

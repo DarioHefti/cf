@@ -5,6 +5,7 @@ import { hitem3DService, nanoBananProService } from '../services';
 
 interface ProjectStore {
   project: ProjectState;
+  isProcessing: boolean;
   sendUserMessage: (text: string) => Promise<void>;
   selectVersion: (id: string) => void;
   generate3D: () => Promise<void>;
@@ -29,6 +30,7 @@ const initialProject: ProjectState = {
 
 export const useProjectStore = create<ProjectStore>((set, get) => ({
   project: initialProject,
+  isProcessing: false,
 
   seedFromInspiration: ({ title, prompt, imageUrl, suggestedMaterialIds }) => {
     const state = get().project;
@@ -42,7 +44,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     const msg: Message = {
       id: uuid(),
       role: 'system',
-      text: `Loaded inspiration: ${title}`,
+      text: `✨ Loaded "${title}" as your starting design. Feel free to describe any modifications you'd like!`,
       createdAt: Date.now(),
     };
 
@@ -55,6 +57,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         selectedMaterials: Array.from(
           new Set([...state.selectedMaterials, ...suggestedMaterialIds]),
         ),
+        threeDAsset: undefined,
       },
     });
   },
@@ -77,31 +80,53 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       createdAt: Date.now(),
     };
 
-    set({ project: { ...state, messages: [...state.messages, userMsg] } });
-
-    const { newVersion, systemMessage } = await nanoBananProService.editImage({
-      project: get().project,
-      userText: text,
+    set({ 
+      project: { ...state, messages: [...state.messages, userMsg] },
+      isProcessing: true 
     });
 
-    const systemMsg: Message = {
-      id: uuid(),
-      role: 'system',
-      text: systemMessage,
-      createdAt: Date.now(),
-    };
+    try {
+      const { newVersion, systemMessage } = await nanoBananProService.editImage({
+        project: get().project,
+        userText: text,
+      });
 
-    const updated = get().project;
+      const systemMsg: Message = {
+        id: uuid(),
+        role: 'system',
+        text: systemMessage,
+        createdAt: Date.now(),
+      };
 
-    set({
-      project: {
-        ...updated,
-        messages: [...updated.messages, systemMsg],
-        conceptVersions: [...updated.conceptVersions, newVersion],
-        selectedVersionId: newVersion.id,
-        threeDAsset: undefined,
-      },
-    });
+      const updated = get().project;
+
+      set({
+        project: {
+          ...updated,
+          messages: [...updated.messages, systemMsg],
+          conceptVersions: [...updated.conceptVersions, newVersion],
+          selectedVersionId: newVersion.id,
+          threeDAsset: undefined,
+        },
+        isProcessing: false,
+      });
+    } catch (error) {
+      const errorMsg: Message = {
+        id: uuid(),
+        role: 'system',
+        text: '❌ Something went wrong. Please try again.',
+        createdAt: Date.now(),
+      };
+      
+      const updated = get().project;
+      set({
+        project: {
+          ...updated,
+          messages: [...updated.messages, errorMsg],
+        },
+        isProcessing: false,
+      });
+    }
   },
 
   selectVersion: (id: string) => {
