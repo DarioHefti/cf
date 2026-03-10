@@ -2,10 +2,12 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useProjectStore } from '../state/projectStore';
 import { ProcessingIndicator } from './Spinner';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export function ChatPanel() {
   const [text, setText] = useState('');
   const { project, sendUserMessage, isProcessing } = useProjectStore();
+  const { t } = useLanguage();
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -17,11 +19,11 @@ export function ChatPanel() {
 
   return (
     <div className="panel">
-      <h2>💬 Design Chat</h2>
+      <h2>💬 {t('step2Label')}</h2>
       <div className="messages">
         {project.messages.length === 0 ? (
           <div className="hint">
-            Pick an inspiration above, then describe changes you'd like — adjust dimensions, materials, style, or any details.
+            {t('chatHint')}
           </div>
         ) : null}
         {project.messages.map((m) => (
@@ -30,18 +32,18 @@ export function ChatPanel() {
           </div>
         ))}
         {isProcessing && (
-          <ProcessingIndicator text="AI is designing your changes..." />
+          <ProcessingIndicator text={t('aiDesigning')} />
         )}
       </div>
       <form onSubmit={onSubmit} className="chatForm">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="e.g., 'Make the legs thinner' or 'Add a drawer'"
+          placeholder={t('chatPlaceholder')}
           disabled={isProcessing}
         />
         <button type="submit" disabled={!text.trim() || isProcessing}>
-          {isProcessing ? '...' : 'Send'}
+          {isProcessing ? t('sending') : t('send')}
         </button>
       </form>
     </div>

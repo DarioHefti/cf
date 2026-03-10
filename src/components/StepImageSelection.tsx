@@ -1,9 +1,30 @@
 import { useRef, useState } from 'react';
 import { INSPIRATIONS } from '../data/inspirations';
 import { useProjectStore } from '../state/projectStore';
+import { useLanguage } from '../i18n/LanguageContext';
+
+// Map inspiration id → translation keys
+const inspirationTitleKey: Record<string, 'inspirationModernDeskTitle' | 'inspirationCoffeeTableTitle' | 'inspirationBookshelfTitle' | 'inspirationDiningTableTitle' | 'inspirationConsoleTableTitle' | 'inspirationSideTableTitle'> = {
+  'modern-desk': 'inspirationModernDeskTitle',
+  'coffee-table': 'inspirationCoffeeTableTitle',
+  'bookshelf': 'inspirationBookshelfTitle',
+  'dining-table': 'inspirationDiningTableTitle',
+  'console-table': 'inspirationConsoleTableTitle',
+  'side-table': 'inspirationSideTableTitle',
+};
+
+const inspirationDescKey: Record<string, 'inspirationModernDeskDesc' | 'inspirationCoffeeTableDesc' | 'inspirationBookshelfDesc' | 'inspirationDiningTableDesc' | 'inspirationConsoleTableDesc' | 'inspirationSideTableDesc'> = {
+  'modern-desk': 'inspirationModernDeskDesc',
+  'coffee-table': 'inspirationCoffeeTableDesc',
+  'bookshelf': 'inspirationBookshelfDesc',
+  'dining-table': 'inspirationDiningTableDesc',
+  'console-table': 'inspirationConsoleTableDesc',
+  'side-table': 'inspirationSideTableDesc',
+};
 
 export function StepImageSelection() {
   const { seedFromInspiration, seedFromUpload } = useProjectStore();
+  const { t } = useLanguage();
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -21,7 +42,7 @@ export function StepImageSelection() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFile(e.dataTransfer.files[0]);
     }
@@ -29,7 +50,7 @@ export function StepImageSelection() {
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith('image/')) {
-      alert('Please upload an image file');
+      alert(t('uploadError'));
       return;
     }
 
@@ -50,13 +71,13 @@ export function StepImageSelection() {
   return (
     <div className="step-container">
       <div className="step-header">
-        <h1>Choose Your Starting Image</h1>
-        <p>Upload your own design or select from our curated examples</p>
+        <h1>{t('chooseTitle')}</h1>
+        <p>{t('chooseSubtitle')}</p>
       </div>
 
       {/* Upload Section */}
       <div className="upload-section">
-        <div 
+        <div
           className={`upload-zone ${dragActive ? 'active' : ''}`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -66,8 +87,8 @@ export function StepImageSelection() {
         >
           <div className="upload-icon">📤</div>
           <div className="upload-text">
-            <strong>Drop your image here</strong>
-            <span>or click to browse</span>
+            <strong>{t('uploadDrop')}</strong>
+            <span>{t('uploadOr')}</span>
           </div>
           <input
             ref={fileInputRef}
@@ -81,7 +102,7 @@ export function StepImageSelection() {
 
       {/* Divider */}
       <div className="divider">
-        <span>or choose an example</span>
+        <span>{t('orChoose')}</span>
       </div>
 
       {/* Example Gallery */}
@@ -99,10 +120,10 @@ export function StepImageSelection() {
               })
             }
           >
-            <img src={item.heroImageUrl} alt={item.title} />
+            <img src={item.heroImageUrl} alt={t(inspirationTitleKey[item.id])} />
             <div className="example-info">
-              <div className="example-title">{item.title}</div>
-              <div className="example-desc">{item.description}</div>
+              <div className="example-title">{t(inspirationTitleKey[item.id])}</div>
+              <div className="example-desc">{t(inspirationDescKey[item.id])}</div>
             </div>
           </button>
         ))}

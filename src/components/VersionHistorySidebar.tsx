@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useProjectStore } from '../state/projectStore';
 import { Skeleton } from './Spinner';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export function VersionHistorySidebar() {
   const { project, selectVersion, isProcessing } = useProjectStore();
+  const { t } = useLanguage();
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
 
   const handleImageLoad = (id: string) => {
@@ -12,12 +14,12 @@ export function VersionHistorySidebar() {
 
   return (
     <div className="panel">
-      <h2>📚 Version History</h2>
+      <h2>{t('versionHistoryTitle')}</h2>
       {project.conceptVersions.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon">📁</div>
           <div className="empty-state-text">
-            Your design versions will appear here as you iterate.
+            {t('versionEmpty')}
           </div>
         </div>
       ) : (
