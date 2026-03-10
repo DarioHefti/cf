@@ -1,8 +1,10 @@
 import { useProjectStore } from '../state/projectStore';
 import { Spinner } from './Spinner';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export function StepModelViewer() {
   const { project, setStep, reset, generate3D } = useProjectStore();
+  const { t } = useLanguage();
   const asset = project.threeDAsset;
 
   const selectedVersion = project.conceptVersions.find(
@@ -14,14 +16,14 @@ export function StepModelViewer() {
       <div className="step-header">
         <div className="step-header-row">
           <button className="back-button" onClick={() => setStep(2)}>
-            ← Back to Design
+            {t('backToDesign')}
           </button>
           <div>
-            <h1>3D Model Preview</h1>
-            <p>View your furniture in 3D and AR</p>
+            <h1>{t('modelTitle')}</h1>
+            <p>{t('modelSubtitle')}</p>
           </div>
           <button className="proceed-button" onClick={reset}>
-            Start New Design
+            {t('startNew')}
           </button>
         </div>
       </div>
@@ -31,14 +33,14 @@ export function StepModelViewer() {
         <div className="model-viewer-container">
           {!asset || asset.status === 'processing' ? (
             <div className="model-loading">
-              <Spinner size="large" text="Generating 3D model..." />
-              <p className="loading-hint">This typically takes 3-5 seconds</p>
+              <Spinner size="large" text={t('generatingModel')} />
+              <p className="loading-hint">{t('loadingHint')}</p>
             </div>
           ) : asset.status === 'error' ? (
             <div className="model-error">
               <div className="error-icon">⚠️</div>
-              <p>Failed to generate 3D model</p>
-              <button onClick={generate3D}>Try Again</button>
+              <p>{t('modelFailed')}</p>
+              <button onClick={generate3D}>{t('tryAgain')}</button>
             </div>
           ) : (
             <model-viewer
@@ -55,36 +57,36 @@ export function StepModelViewer() {
         {/* Right: Reference Image & Actions */}
         <div className="model-sidebar">
           <div className="reference-card">
-            <h3>Reference Design</h3>
+            <h3>{t('referenceDesign')}</h3>
             {selectedVersion && (
               <img 
                 src={selectedVersion.outputImageUrl} 
-                alt="Reference design"
+                alt={t('referenceDesign')}
               />
             )}
           </div>
 
           <div className="model-actions">
-            <h3>Actions</h3>
+            <h3>{t('actions')}</h3>
             <div className="action-buttons">
               <button className="action-btn">
-                📱 View in AR
+                {t('viewAR')}
               </button>
               <button className="action-btn secondary">
-                💾 Download 3D Model
+                {t('download3D')}
               </button>
               <button className="action-btn secondary">
-                🔗 Share Design
+                {t('shareDesign')}
               </button>
             </div>
           </div>
 
           <div className="model-tips">
-            <h3>Tips</h3>
+            <h3>{t('tipsTitle')}</h3>
             <ul>
-              <li>🖱️ Drag to rotate the model</li>
-              <li>🔍 Scroll to zoom in/out</li>
-              <li>📱 On mobile, tap "View in AR" to place it in your space</li>
+              <li>{t('tip1')}</li>
+              <li>{t('tip2')}</li>
+              <li>{t('tip3')}</li>
             </ul>
           </div>
         </div>

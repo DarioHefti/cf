@@ -753,3 +753,48 @@ model-viewer {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==================== Language Switcher ==================== */
+
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f3f4f6;
+  border: 1px solid #e2e5ea;
+  border-radius: 10px;
+  padding: 4px 8px;
+}
+
+.lang-btn {
+  background: transparent;
+  color: #6b7280;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.15s;
+}
+
+.lang-btn:hover:enabled {
+  background: #e5e7eb;
+  color: #1a1a2e;
+  transform: none;
+}
+
+.lang-btn--active {
+  background: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.lang-btn--active:hover:enabled {
+  background: #2563eb !important;
+}
+
+.lang-divider {
+  color: #d1d5db;
+  font-size: 12px;
+  user-select: none;
+}

@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
 import { useProjectStore } from '../state/projectStore';
 import { ProcessingIndicator, Skeleton } from './Spinner';
+import { useLanguage } from '../i18n/LanguageContext';
 
 export function StepDesignChat() {
   const { 
@@ -12,6 +13,7 @@ export function StepDesignChat() {
     setStep,
     isProcessing 
   } = useProjectStore();
+  const { t } = useLanguage();
   
   const [text, setText] = useState('');
   const [imageLoading, setImageLoading] = useState(false);
@@ -51,18 +53,18 @@ export function StepDesignChat() {
       <div className="step-header">
         <div className="step-header-row">
           <button className="back-button" onClick={() => setStep(1)}>
-            ← Back
+            {t('back')}
           </button>
           <div>
-            <h1>Refine Your Design</h1>
-            <p>Chat with AI to perfect your furniture design</p>
+            <h1>{t('refineTitel')}</h1>
+            <p>{t('refineSubtitle')}</p>
           </div>
           <button 
             className="proceed-button"
             onClick={handleProceedTo3D}
             disabled={isProcessing || !project.selectedVersionId}
           >
-            Generate 3D Model →
+            {t('generate3D')}
           </button>
         </div>
       </div>
@@ -78,7 +80,7 @@ export function StepDesignChat() {
                 {imageLoading && <Skeleton height={400} borderRadius="12px" />}
                 <img 
                   src={selected.outputImageUrl} 
-                  alt="Current design" 
+                  alt={t('referenceDesign')}
                   style={{ display: imageLoading ? 'none' : 'block' }}
                   onLoad={() => setImageLoading(false)}
                   onError={() => setImageLoading(false)}
@@ -86,7 +88,7 @@ export function StepDesignChat() {
               </>
             ) : (
               <div className="empty-preview">
-                <span>No design selected</span>
+                <span>{t('noDesignSelected')}</span>
               </div>
             )}
           </div>
@@ -94,7 +96,7 @@ export function StepDesignChat() {
           {/* Version History */}
           {project.conceptVersions.length > 1 && (
             <div className="version-strip">
-              <span className="version-label">Versions:</span>
+              <span className="version-label">{t('versionsLabel')}</span>
               <div className="version-thumbnails">
                 {project.conceptVersions.map((v, index) => (
                   <button
@@ -121,7 +123,7 @@ export function StepDesignChat() {
               </div>
             ))}
             {isProcessing && (
-              <ProcessingIndicator text="AI is designing your changes..." />
+              <ProcessingIndicator text={t('aiDesigning')} />
             )}
             <div ref={messagesEndRef} />
           </div>
@@ -130,36 +132,36 @@ export function StepDesignChat() {
             <input
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Describe changes: 'Make the legs thinner' or 'Add a drawer'..."
+              placeholder={t('chatPlaceholder')}
               disabled={isProcessing}
             />
             <button type="submit" disabled={!text.trim() || isProcessing}>
-              {isProcessing ? '...' : 'Send'}
+              {isProcessing ? t('sending') : t('send')}
             </button>
           </form>
 
           <div className="chat-suggestions">
-            <span>Try:</span>
+            <span>{t('tryLabel')}</span>
             <button 
               onClick={() => setText('Make it more modern')} 
               disabled={isProcessing}
               className="suggestion-chip"
             >
-              More modern
+              {t('suggestionModern')}
             </button>
             <button 
               onClick={() => setText('Add a drawer')} 
               disabled={isProcessing}
               className="suggestion-chip"
             >
-              Add drawer
+              {t('suggestionDrawer')}
             </button>
             <button 
               onClick={() => setText('Make legs thinner')} 
               disabled={isProcessing}
               className="suggestion-chip"
             >
-              Thinner legs
+              {t('suggestionLegs')}
             </button>
           </div>
         </div>
