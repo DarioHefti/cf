@@ -1,15 +1,34 @@
+import { useRef, useState, useCallback } from 'react';
 import { useProjectStore } from '../state/projectStore';
 import { Spinner } from './Spinner';
 import { useLanguage } from '../i18n/LanguageContext';
+import type { ModelViewerElement } from '../model-viewer.d';
 
 export function StepModelViewer() {
   const { project, setStep, reset, generate3D } = useProjectStore();
   const { t } = useLanguage();
   const asset = project.threeDAsset;
+  const modelViewerRef = useRef<HTMLElement>(null);
+  const [arNotSupported, setArNotSupported] = useState(false);
 
   const selectedVersion = project.conceptVersions.find(
     (v) => v.id === project.selectedVersionId
   );
+
+  const handleViewAR = useCallback(() => {
+    const mv = modelViewerRef.current as ModelViewerElement | null;
+    if (!mv) return;
+
+    // canActivateAR is true on AR-capable devices (Android with Scene Viewer /
+    // WebXR, iOS with Quick Look). If false we warn instead of silently failing.
+    if (!mv.canActivateAR) {
+      setArNotSupported(true);
+      setTimeout(() => setArNotSupported(false), 3000);
+      return;
+    }
+
+    mv.activateAR();
+  }, []);
 
   return (
     <div className="step-container model-viewer-step">
@@ -44,13 +63,22 @@ export function StepModelViewer() {
             </div>
           ) : (
             <model-viewer
+              ref={modelViewerRef}
               src={asset.modelUrl}
               ar
               ar-modes="webxr scene-viewer quick-look"
               camera-controls
               auto-rotate
+              shadow-intensity="1"
               style={{ width: '100%', height: '100%', minHeight: '500px', background: '#f3f4f6', borderRadius: '12px' }}
-            />
+            >
+              {/* 
+                The default model-viewer AR button appears as an overlay on
+                the canvas. We keep it so users can tap it directly on mobile,
+                but we also wire our own sidebar button (handleViewAR) so it
+                works from the actions panel too.
+              */}
+            </model-viewer>
           )}
         </div>
 
@@ -69,8 +97,13 @@ export function StepModelViewer() {
           <div className="model-actions">
             <h3>{t('actions')}</h3>
             <div className="action-buttons">
-              <button className="action-btn">
-                {t('viewAR')}
+              <button
+                className="action-btn"
+                onClick={handleViewAR}
+                disabled={!asset || asset.status !== 'ready'}
+                title={arNotSupported ? t('arNotSupported') : t('viewAR')}
+              >
+                {arNotSupported ? t('arNotSupported') : t('viewAR')}
               </button>
               <button className="action-btn secondary">
                 {t('download3D')}

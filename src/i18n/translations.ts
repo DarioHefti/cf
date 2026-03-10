@@ -80,6 +80,7 @@ export const translations = {
     tip1: '🖱️ Ziehen um das Modell zu drehen',
     tip2: '🔍 Scrollen zum Zoomen',
     tip3: '📱 Auf dem Handy: „In AR anzeigen" tippen, um es in Ihrem Raum zu platzieren',
+    arNotSupported: '⚠️ AR auf diesem Gerät nicht verfügbar',
 
     // ChatPanel (legacy)
     chatHint: 'Wählen Sie oben eine Inspiration, beschreiben Sie dann gewünschte Änderungen — passen Sie Maße, Materialien, Stil oder Details an.',
@@ -174,6 +175,7 @@ export const translations = {
     tip1: '🖱️ Drag to rotate the model',
     tip2: '🔍 Scroll to zoom in/out',
     tip3: '📱 On mobile, tap "View in AR" to place it in your space',
+    arNotSupported: '⚠️ AR is not supported on this device',
 
     // ChatPanel (legacy)
     chatHint: "Pick an inspiration above, then describe changes you'd like — adjust dimensions, materials, style, or any details.",
